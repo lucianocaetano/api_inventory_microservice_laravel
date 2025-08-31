@@ -39,23 +39,23 @@ class Coupon {
         if($type === 'percent' && $percent > 90) throw new InvalidCouponPercentageException("Invalid percentage: $percent");
     }
 
-    public function code() {
-        return $this->code;
+    public function code(): string {
+        return $this->code->value();
     }
 
-    public function type() {
+    public function type(): string {
         return $this->type->value();
     }
 
-    public function percent() {
+    public function percent(): int|null {
         return $this->percent;
     }
 
-    public function expiresAt() {
+    public function expiresAt(): DateTime {
         return $this->expiresAt;
     }
 
-    public function amount() {
+    public function amount(): string {
         return $this->amount->toString();
     }
 

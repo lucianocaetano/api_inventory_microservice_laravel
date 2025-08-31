@@ -2,17 +2,18 @@
 
 namespace Src\category\application\use_cases;
 
+use Ecotone\Modelling\MessageBus;
 use Src\category\application\contracts\out\CategoryReadRepository;
+use Src\category\application\DTOs\command\UpdateCategoryCommand;
 use Src\category\application\exceptions\ParentCategoryNotFoundException;
 use Src\category\domain\entities\Category;
-use Src\category\domain\repositories\CategoryRepository;
 use Src\shared\infrastructure\exceptions\DataNotFoundException;
 
 class UpdateCategoryUseCase
 {
     public function __construct(
-        private CategoryRepository $repository,
-        private CategoryReadRepository $readRepository
+        private CategoryReadRepository $readRepository,
+        private MessageBus $messageBus,
     ) {}
 
     public function execute(Category $category): Category
@@ -24,6 +25,11 @@ class UpdateCategoryUseCase
             throw new ParentCategoryNotFoundException('Parent category not found');
         }
 
-        return $this->repository->update($category);
+        $this->messageBus->send(
+            "inventory_category_channel",
+            UpdateCategoryCommand::fromModel($category)
+        );
+
+        return $category;
     }
 }

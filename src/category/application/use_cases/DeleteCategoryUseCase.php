@@ -2,17 +2,21 @@
 
 namespace Src\category\application\use_cases;
 
-use Src\category\domain\repositories\CategoryRepository;
+use Ecotone\Modelling\MessageBus;
+use Src\category\application\DTOs\command\DeleteCategoryCommand;
 
 class DeleteCategoryUseCase
 {
     public function __construct(
-        private CategoryRepository $repository
+        private MessageBus $messageBus
     ) {}
 
     public function execute(string $category)
     {
 
-        $this->repository->delete($category);
+        $this->messageBus->send(
+            "inventory_category_channel",
+            new DeleteCategoryCommand($category)
+        );
     }
 }

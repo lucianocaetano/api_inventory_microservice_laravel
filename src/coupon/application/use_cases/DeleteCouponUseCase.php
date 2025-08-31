@@ -2,8 +2,8 @@
 
 namespace Src\coupon\application\use_cases;
 
-use Src\coupon\domain\entities\Coupon;
 use Src\coupon\domain\repositories\CouponRepository;
+use Src\coupon\domain\value_objects\CouponCode;
 
 class DeleteCouponUseCase {
 
@@ -11,8 +11,8 @@ class DeleteCouponUseCase {
         private CouponRepository $repository
     ) {}
 
-    public function execute(Coupon $coupon): Coupon
+    public function execute(CouponCode $code): void
     {
-        return $this->repository->update($coupon);
+        $this->repository->delete($code);
     }
 }

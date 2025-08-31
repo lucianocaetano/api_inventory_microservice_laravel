@@ -24,7 +24,51 @@ class CouponController extends Controller {
         private FindAllCouponsUseCase $findAllCouponsUseCase,
     ) {}
 
-    public function create(Request $request) {
+
+    public function index(Request $request) {
+
+        $data = $this->findAllCouponsUseCase->execute($request->all());
+
+        return $this->resApi(
+            data: $data,
+            status: Response::HTTP_OK
+       );
+    }
+
+    public function update(Request $request, string $code) {
+        $data = $request->validate([
+            'type' => 'required|string|in:percent,fixed',
+            'amount' => 'nullable|numeric',
+            'currency_code' => 'required|string',
+            'currency_symbol' => 'required|string',
+            'currency_decimals' => 'required|integer',
+            'percent' => 'nullable|numeric',
+            'expires_at' => 'required|date',
+            'is_active' => 'required|boolean',
+            'category_id' => 'nullable|integer|exists:categories,id',
+        ]);
+
+        $coupon = new Coupon(
+            new CouponCode($code),
+            new CouponType($data['type']),
+            new Amount(
+                $data['amount'],
+                new Currency($data['currency_code'], $data['currency_symbol'], $data['currency_decimals'])
+            ),
+            $data['percent'],
+            new \DateTime($data['expires_at']),
+            $data['is_active'],
+            $data['category_id']
+        );
+
+        $data = $this->updateCouponUseCase->execute($coupon);
+
+        return $this->resApi(
+            data: $this->mapDomainToArray($data),
+            status: Response::HTTP_OK
+       );
+    }
+    public function store(Request $request) {
 
         $data = $request->validate([
             'type' => 'required|string|in:percent,fixed',
@@ -56,6 +100,15 @@ class CouponController extends Controller {
         return $this->resApi(
             data: $this->mapDomainToArray($coupon),
             status: Response::HTTP_CREATED
+        );
+    }
+
+    public function destroy(string $code) {
+        $this->deleteCouponUseCase->execute(new CouponCode($code));
+
+        return $this->resApi(
+            data: null,
+            status: Response::HTTP_NO_CONTENT
         );
     }
 

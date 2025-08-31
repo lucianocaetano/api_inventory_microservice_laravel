@@ -25,8 +25,10 @@ class EloquentCategoryWriteRepository implements CategoryRepository
 
     public function update(Category $category): Category
     {
-
         $model = ModelsCategory::find($category->id());
+
+        if(!$model)
+            throw new DataNotFoundException('Category');
 
         $model->update([
             'id' => $category->id(),
@@ -40,7 +42,6 @@ class EloquentCategoryWriteRepository implements CategoryRepository
 
     public function delete(string $category_slug)
     {
-
         $model = ModelsCategory::where('slug', $category_slug)->first();
 
         if(!$model)

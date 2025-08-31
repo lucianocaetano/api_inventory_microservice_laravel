@@ -1,6 +1,6 @@
 <?php
 
-namespace {ucfist(src/)}$path_namespace\infrastructure\validators;
+namespace Src\supplier\infrastructure\validators;
 
 use Illuminate\Foundation\Http\FormRequest;
 
