@@ -19,9 +19,7 @@ class EloquentProductWriteRepository implements ProductRepository {
             'name' => $product->name(),
             'description' => $product->description(),
             'quantity' => $product->quantity(),
-            'currency_code' => $product->currency_code(),
             'currency_symbol' => $product->currency_symbol(),
-            'currency_decimals' => $product->currency_decimals(),
             'price' => $product->price(),
             'category_id' => $product->category_id(),
         ]);
@@ -31,7 +29,7 @@ class EloquentProductWriteRepository implements ProductRepository {
 
     public function update(Product $product): Product
     {
-        $model = ModelsProduct::where('id', $product->id())->find();
+        $model = ModelsProduct::where('id', $product->id())->first();
 
         if(!$model)
             throw new DataNotFoundException('Product');
@@ -41,9 +39,7 @@ class EloquentProductWriteRepository implements ProductRepository {
             'name' => $product->name(),
             'description' => $product->description(),
             'quantity' => $product->quantity(),
-            'currency_code' => $product->currency_code(),
             'currency_symbol' => $product->currency_symbol(),
-            'currency_decimals' => $product->currency_decimals(),
             'price' => $product->price(),
             'category_id' => $product->category_id(),
         ]);
@@ -53,7 +49,7 @@ class EloquentProductWriteRepository implements ProductRepository {
 
     public function delete(Id $id)
     {
-        $model = ModelsProduct::where('id', $id->value())->find();
+        $model = ModelsProduct::where('id', $id->value())->first();
 
         if(!$model)
             throw new DataNotFoundException('Product');

@@ -2,20 +2,19 @@
 
 namespace Src\coupon\domain\value_objects;
 
-use Symfony\Component\Uid\Uuid;
+use Illuminate\Support\Str;
 
 class CouponCode {
     private readonly string $code;
 
     public function __construct(string $code)
     {
-
         $this->code = strtoupper($code);
     }
 
     public static function generateCode(): self
     {
-        return new self(strtoupper(Uuid::v4()->toRfc4122()));
+        return new self(Str::random(10));
     }
 
     public function value(): string

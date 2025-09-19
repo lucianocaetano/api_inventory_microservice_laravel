@@ -8,7 +8,7 @@ class FindBySlugProductUseCase
 {
 
     public function __construct(
-        private ProductReadRepository $repository
+        private ProductReadRepository $repository,
     ) {}
 
     public function execute(string $slug): array {

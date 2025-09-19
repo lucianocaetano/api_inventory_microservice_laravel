@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->string('code')->unique()->primary();
             $table->string('type');
-            $table->integer('percent');
-            $table->integer('amount');
-            $table->dateTime('expires_at');
+            $table->integer('percent')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('expires_at');
             $table->boolean('is_active');
-            $table->foreignId('category_id')->nullable();
+            $table->string('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
         });
     }

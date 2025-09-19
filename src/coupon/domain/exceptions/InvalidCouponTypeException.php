@@ -1,5 +1,5 @@
 <?php
 
-namespace Src\coupon\domain\value_objects;
+namespace Src\coupon\domain\exceptions;
 
 class InvalidCouponTypeException extends \InvalidArgumentException {}

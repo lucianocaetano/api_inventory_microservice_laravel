@@ -28,7 +28,7 @@ class ValidTokenMiddleware
             });
 
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Invalid token'], 401);
+            return response()->json(['error' => 'Invalid token'], 301);
         }
 
         return $next($request);

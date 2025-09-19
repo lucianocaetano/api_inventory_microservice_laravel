@@ -83,16 +83,8 @@ class Product {
         return $this->slug;
     }
 
-    public function currency_code(): string {
-        return $this->price->currency->code();
-    }
-
     public function currency_symbol(): string {
         return $this->price->currency->symbol();
-    }
-
-    public function currency_decimals(): int {
-        return $this->price->currency->decimals();
     }
 
     public function priceToString(): string {

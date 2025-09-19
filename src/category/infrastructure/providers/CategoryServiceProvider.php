@@ -17,6 +17,7 @@ use Src\category\application\use_cases\UpdateCategoryUseCase;
 use Src\category\application\use_cases\FindAllCategoriesUseCase;
 use Src\category\application\use_cases\FindBySlugCategoryUseCase;
 use Src\category\application\use_cases\FindBySlugWithProductsUseCase;
+use Src\role\domain\entities\ExtractCurrentUser;
 
 class CategoryServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,8 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(CreateCategoryUseCase::class);
         $this->app->bind(UpdateCategoryUseCase::class);
         $this->app->bind(DeleteCategoryUseCase::class);
+
+        $this->app->bind(ExtractCurrentUser::class);
     }
 
     public function boot()

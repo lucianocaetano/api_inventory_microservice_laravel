@@ -11,7 +11,7 @@ class EloquentProductReadRepository implements ProductReadRepository
 {
     public function findAllProducts(array $filters): array
     {
-        $data = Product::paginate();
+        $data = Product::filter($filters)->paginate();
 
         return [
             'items' => $data->items(),

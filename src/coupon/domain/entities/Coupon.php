@@ -3,6 +3,7 @@
 namespace Src\coupon\domain\entities;
 
 use DateTime;
+use Src\coupon\domain\exceptions\InvalidCouponAmountException;
 use Src\coupon\domain\exceptions\InvalidCouponPercentageException;
 use Src\coupon\domain\value_objects\CouponCode;
 use Src\coupon\domain\value_objects\CouponType;
@@ -16,27 +17,32 @@ use Src\shared\domain\value_objects\Id;
  */
 class Coupon {
 
-    /**
-     * @param CouponCode $code
-     * @param CouponType $type
-     * @param Amount|null $amount
-     * @param int|null $percent
-     * @param DateTime $expiresAt
-     * @param bool $isActive
-     * @param Id|null $category_id
-     * @throws InvalidCouponPercentageException
-     */
     public function __construct(
-        private readonly CouponCode $code,
-        private readonly CouponType $type,
-        private readonly Amount|null $amount,
-        private readonly int|null $percent,
-        private readonly DateTime $expiresAt,
-        private readonly bool $isActive,
-        private readonly Id|null $category_id = null
+        private CouponCode $code,
+        private CouponType $type,
+        private Amount|null $amount,
+        private int|null $percent,
+        private DateTime $expiresAt,
+        private bool $isActive,
+        private Id|null $category_id = null
     ) {
 
-        if($type === 'percent' && $percent > 90) throw new InvalidCouponPercentageException("Invalid percentage: $percent");
+        if($type->value() === 'fixed' && $amount === null)
+            throw new InvalidCouponAmountException("Invalid amount, it is required, it is required if the type is percent");
+
+        if($type->value() === 'percent' && $percent === null)
+            throw new InvalidCouponPercentageException("Invalid percentage, it is required if the type is percent");
+
+        if($type->value() === 'percent' && $percent > 90)
+            throw new InvalidCouponPercentageException("Invalid percentage: $percent");
+
+        if($type->value() === 'percent') {
+            $this->amount = null;
+        }
+
+        if($type->value() === 'fixed') {
+            $this->percent = null;
+        }
     }
 
     public function code(): string {
@@ -51,11 +57,13 @@ class Coupon {
         return $this->percent;
     }
 
-    public function expiresAt(): DateTime {
-        return $this->expiresAt;
+    public function expiresAt(): string {
+        return $this->expiresAt->format('Y-m-d H:i:s');
     }
 
-    public function amount(): string {
+    public function amount(): ?string {
+        if($this->amount === null) return null;
+
         return $this->amount->toString();
     }
 

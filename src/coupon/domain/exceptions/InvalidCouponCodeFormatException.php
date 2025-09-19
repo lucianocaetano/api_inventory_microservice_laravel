@@ -2,4 +2,4 @@
 
 namespace Src\coupon\domain\exceptions;
 
-class InvalidCouponCodeFormatException extends \Exception {}
+class InvalidCouponCodeFormatException extends \InvalidArgumentException {}

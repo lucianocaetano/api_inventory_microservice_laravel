@@ -2,20 +2,20 @@
 
 namespace Src\category\application\use_cases;
 
-use Ecotone\Modelling\MessageBus;
-
 use Src\category\application\contracts\out\CategoryReadRepository;
-use Src\category\application\DTOs\command\CreateCategoryCommand;
 use Src\category\application\exceptions\ParentCategoryNotFoundException;
 use Src\category\domain\entities\Category;
-
+use Src\category\domain\repositories\CategoryRepository;
+use Src\category\domain\services\CategoryService;
+use Src\shared\application\contracts\out\ExtractCurrentUser;
 use Src\shared\infrastructure\exceptions\DataNotFoundException;
 
 class CreateCategoryUseCase
 {
     public function __construct(
         private CategoryReadRepository $readRepository,
-        private MessageBus $messageBus
+        private CategoryRepository $categoryRepository,
+        private ExtractCurrentUser $extractCurrentUser,
     ) {}
 
     public function execute(Category $category): Category
@@ -23,15 +23,20 @@ class CreateCategoryUseCase
         try {
             if($category->parent() != null)
                 $this->readRepository->findBySlug($category->parent());
-
-
-        } catch (DataNotFoundException $e) {
+        } catch (DataNotFoundException $_) {
             throw new ParentCategoryNotFoundException('Parent category not found');
         }
 
-        $this->messageBus->send(
-            "inventory_category_channel",
-            CreateCategoryCommand::fromModel($category)
+        $user = $this->extractCurrentUser->currentUser();
+
+        $categoryService = new CategoryService(
+            $user->permissions(),
+        );
+
+        $categoryService->validCreate();
+
+        $this->categoryRepository->save(
+            $category
         );
 
         return $category;

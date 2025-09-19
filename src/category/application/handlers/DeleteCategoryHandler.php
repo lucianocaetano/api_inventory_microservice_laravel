@@ -9,10 +9,10 @@ use Src\category\domain\repositories\CategoryRepository;
 class DeleteCategoryHandler
 {
     public function __construct(
-        private CategoryRepository $repository
+        private CategoryRepository $repository,
     ) {}
 
-    #[CommandHandler("inventory_category_channel")]
+    #[CommandHandler("inventory_delete_category_channel")]
     public function handle(DeleteCategoryCommand $event)
     {
         $this->repository->delete($event->getSlug());

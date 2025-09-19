@@ -14,8 +14,6 @@ class Amount {
         if($this->amount < 1) {
             throw new InvalidArgumentException("The amount cannot be less than 1");
         }
-
-        $this->currency->assertValidAmount($this->amount);
     }
 
     public function amount() {
@@ -30,8 +28,6 @@ class Amount {
 
     public function editCurrency(Currency $currency) {
 
-        $currency->assertValidAmount($this->amount);
-
         return new self(
             $this->amount,
             $currency
@@ -39,8 +35,6 @@ class Amount {
     }
 
     public function editAmount(float $amount) {
-
-        $this->currency->assertValidAmount($amount);
 
         return new self(
             $amount,
@@ -50,8 +44,6 @@ class Amount {
 
     public function edit(float $amount, Currency $currency) {
 
-        $currency->assertValidAmount($amount);
-
         return new self(
             $amount,
             $currency
@@ -59,6 +51,6 @@ class Amount {
     }
 
     public function toString() {
-        return $this->amount . ' ' . $this->currency->code();
+        return $this->currency->symbol() . $this->amount;
     }
 }

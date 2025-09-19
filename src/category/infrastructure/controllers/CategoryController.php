@@ -12,7 +12,9 @@ use Src\category\application\use_cases\FindBySlugCategoryUseCase;
 use Src\category\application\use_cases\FindBySlugWithProductsUseCase;
 use Src\category\application\use_cases\UpdateCategoryUseCase;
 use Src\category\domain\entities\Category;
+use Src\shared\domain\exception\InvalidPermission;
 use Src\shared\domain\value_objects\Id;
+use Src\shared\infrastructure\exceptions\DataNotFoundException;
 
 class CategoryController extends Controller {
 
@@ -38,9 +40,18 @@ class CategoryController extends Controller {
 
     public function show(string $slug) {
 
-        $data = $this->findBySlugCategoryUseCase->execute($slug);
+        try {
+            $data = $this->findBySlugCategoryUseCase->execute($slug);
 
-        return $this->resApi($data, Response::HTTP_OK);
+            return $this->resApi($data, Response::HTTP_OK);
+        } catch (DataNotFoundException $e) {
+
+            return $this->resApi(
+                message: $e->getMessage(),
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
+
     }
 
     public function find_all_with_products(string $category_slug) {
@@ -52,56 +63,93 @@ class CategoryController extends Controller {
 
     public function store(Request $request) {
 
+        try {
+            $request->validate([
+                'name' => 'required|string',
+                'parent' => 'nullable',
+            ]);
+
+            $data = $this->createCategoryUseCase->execute(
+                new Category(
+                    Id::randomId(),
+                    $request->get('name'),
+                    str()->slug($request->get('name')),
+                    $request->get('parent')
+                )
+            );
+
+            return $this->resApi(
+                data: $this->mapModelToArray($data),
+                status: Response::HTTP_CREATED
+            );
+        } catch(InvalidPermission $e) {
+            return $this->resApi(
+                message: $e->getMessage(),
+                status: Response::HTTP_FORBIDDEN
+            );
+        }
+    }
+
+    public function update(string $id, Request $request) {
+
         $request->validate([
             'name' => 'required|string',
             'parent' => 'nullable',
         ]);
 
-        $data = $this->createCategoryUseCase->execute(
-            new Category(
-                Id::randomId(),
-                $request->get('name'),
-                str()->slug($request->get('name')),
-                $request->get('parent')
-            )
-        );
+        try{
 
-        return $this->resApi(
-            $this->mapModelToArray($data),
-            Response::HTTP_CREATED
-        );
-    }
+            $data = $this->updateCategoryUseCase->execute(
+                new Category(
+                    new Id($id),
+                    str()->slug($request->get('name')),
+                    $request->get('name'),
+                    $request->get('parent')
+                )
+            );
 
-    public function update(Request $request, string $id) {
+            return $this->resApi(
+                $this->mapModelToArray($data),
+                Response::HTTP_OK
+            );
+        } catch(DataNotFoundException $e) {
 
-        $request->validate($request, [
-            'name' => 'required|string',
-            'parent' => 'nullable',
-        ]);
+            return $this->resApi(
+                null,
+                Response::HTTP_NOT_FOUND
+            );
+        } catch(InvalidPermission $e) {
 
-        $data = $this->updateCategoryUseCase->execute(
-            new Category(
-                new Id($id),
-                $request->get('name'),
-                str()->slug($request->get('name'))->value(),
-                $request->get('parent')
-            )
-        );
-
-        return $this->resApi(
-            $this->mapModelToArray($data),
-            Response::HTTP_OK
-        );
+            return $this->resApi(
+                message: $e->getMessage(),
+                status: Response::HTTP_FORBIDDEN
+            );
+        }
     }
 
     public function destroy(string $slug) {
 
-        $this->deleteCategoryUseCase->execute($slug);
+        try{
 
-        return $this->resApi(
-            null,
-            Response::HTTP_NO_CONTENT
-        );
+            $this->deleteCategoryUseCase->execute($slug);
+
+            return $this->resApi(
+                null,
+                Response::HTTP_NO_CONTENT
+            );
+        } catch(DataNotFoundException $e) {
+
+            return $this->resApi(
+                null,
+                Response::HTTP_NOT_FOUND
+            );
+        } catch(InvalidPermission $e) {
+
+            return $this->resApi(
+                message: $e->getMessage(),
+                status: Response::HTTP_FORBIDDEN
+            );
+        }
     }
 
     private function mapModelToArray(Category $category) {

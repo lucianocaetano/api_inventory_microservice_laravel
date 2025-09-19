@@ -39,5 +39,4 @@ class Category {
     public function parent(): string|null {
         return $this->parent;
     }
-
 }

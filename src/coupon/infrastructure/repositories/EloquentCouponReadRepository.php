@@ -9,7 +9,7 @@ class EloquentCouponReadRepository implements CouponReadRepository {
 
     public function findAllCoupons(array $filters): array
     {
-        $data = Coupon::paginate();
+        $data = Coupon::filter($filters)->paginate();
 
         return [
             "items" => $data->items(),

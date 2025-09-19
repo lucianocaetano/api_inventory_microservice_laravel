@@ -2,6 +2,8 @@
 
 namespace Src\coupon\domain\value_objects;
 
+use Src\coupon\domain\exceptions\InvalidCouponTypeException;
+
 class CouponType
 {
     public const PERCENT = 'percent';

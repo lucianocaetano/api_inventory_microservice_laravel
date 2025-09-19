@@ -32,7 +32,7 @@ class EloquentCouponWriteRepository implements CouponRepository {
         if(!$model)
             throw new DataNotFoundException('Coupon');
 
-        $model::update([
+        $model->update([
             'code' => $coupon->code(),
             'type' => $coupon->type(),
             'amount' => $coupon->amount(),
@@ -47,7 +47,7 @@ class EloquentCouponWriteRepository implements CouponRepository {
 
     public function delete(CouponCode $code): void
     {
-        $model = ModelsCoupon::where('code', $code)->find();
+        $model = ModelsCoupon::where('code', $code->value())->first();
 
         if(!$model)
             throw new DataNotFoundException('Coupon');

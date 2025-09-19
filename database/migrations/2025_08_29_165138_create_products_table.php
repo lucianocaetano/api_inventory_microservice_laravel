@@ -15,11 +15,9 @@ return new class extends Migration
             $table->string('id')->unique()->primary();
             $table->string('slug')->unique();
             $table->string('name')->unique();
-            $table->string('description');
+            $table->text('description');
             $table->integer('quantity');
-            $table->string('currency_code');
             $table->string('currency_symbol');
-            $table->integer('currency_decimals');
             $table->decimal('price', 10, 2);
             $table->string('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
