@@ -9,6 +9,8 @@ class Permission {
     public function isValid(): bool {
 
         $permissions = [
+            "normal_user",
+
             "update_provider",
             "delete_provider",
             "create_provider",

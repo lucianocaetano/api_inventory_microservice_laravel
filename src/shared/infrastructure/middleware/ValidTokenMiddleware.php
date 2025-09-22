@@ -3,8 +3,13 @@
 namespace Src\shared\infrastructure\middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use DateTimeZone;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;use Illuminate\Http\Request;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Symfony\Component\HttpFoundation\Response;
 
 class ValidTokenMiddleware
@@ -16,43 +21,28 @@ class ValidTokenMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-
         $token = $request->bearerToken();
 
-        if(!$token) {
-            return response()->json(['error' => 'Invalid token'], 401);
-        }
+        $jwk = json_decode(file_get_contents(env('KEYCLOAK_URL').'/realms/'.env('KEYCLOAK_REALM').'/protocol/openid-connect/certs'), true);
 
-        $res = Http::asForm()->withBasicAuth(
-            env('KEYCLOAK_CLIENT_ID'),
-            env('KEYCLOAK_CLIENT_SECRET')
-        )->post(env('KEYCLOAK_URL') . '/realms/' . env('KEYCLOAK_REALM') . '/protocol/openid-connect/token/introspect', [
-            'token' => $token
-        ]);
+        $publicKey = InMemory::plainText($jwk['keys'][0]['x5c'][0]);
 
-        if($res->status() == 200) {
+        $config = Configuration::forAsymmetricSigner(
+            new Sha256(),
+            InMemory::empty(),
+            $publicKey
+        );
 
-            $data = $res->json();
 
-            $active = filter_var($data['active'], FILTER_VALIDATE_BOOLEAN);
+        $token = $config->parser()->parse($token);
 
-            if (!$active) {
-                return response()->json(['error' => 'Invalid token'], 401);
-            }
-        } else {
+        $clock = new SystemClock(new DateTimeZone('UTC'));
 
-            return response()->json(['error' => 'Invalid token'], 401);
-        }
-
-        $request->setUserResolver(function () use ($data) {
-
-            return [
-                'id' => $data['sub'],
-                'email' => $data['email'],
-                'permissions' => $data['resource_access']['microservicios']['roles'] ?? []
-            ];
-        });
-
+        $config->validator()->assert(
+            $token,
+            new SignedWith($config->signer(), $config->verificationKey()),
+            new ValidAt($clock)
+        );
         return $next($request);
     }
 }

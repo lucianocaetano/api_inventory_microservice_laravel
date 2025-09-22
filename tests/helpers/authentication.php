@@ -6,7 +6,7 @@ use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 
 class authentication {
 
-    public static function getNormalToken () {
+    public static function getNormalToken (): ?string {
         $provider = new Keycloak([
             'authServerUrl' => env('KEYCLOAK_URL'),
             'realm' => env('KEYCLOAK_REALM'),
@@ -27,20 +27,20 @@ class authentication {
         }
     }
 
-    public static function getSuperToken(): string
+    public static function getSuperToken(): ?string
     {
-        $provider = new Keycloak([
-            'authServerUrl' => env('KEYCLOAK_URL'),
-            'realm' => env('KEYCLOAK_REALM'),
-            'clientId' => env('KEYCLOAK_CLIENT_ID'),
-            'clientSecret' => env('KEYCLOAK_CLIENT_SECRET'),
-            'redirectUri' => '',
-        ]);
-
         try {
+            $provider = new Keycloak([
+                'authServerUrl' => env('KEYCLOAK_URL'),
+                'realm' => env('KEYCLOAK_REALM'),
+                'clientId' => env('KEYCLOAK_CLIENT_ID'),
+                'clientSecret' => env('KEYCLOAK_CLIENT_SECRET'),
+                'redirectUri' => '',
+            ]);
+
             $token = $provider->getAccessToken('password', [
                 'username' => 'test@gmail.com',
-                'password' => 'secret',
+                'password' => 'admin',
             ]);
 
             return $token->getToken();

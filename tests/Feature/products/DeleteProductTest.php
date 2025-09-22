@@ -86,7 +86,7 @@ class DeleteProductTest extends TestCase
         $response->assertStatus(401);
 
         $response->assertJson([
-            "error" => "Invalid token",
+            "message" => "Unauthenticated.",
         ]);
     }
 

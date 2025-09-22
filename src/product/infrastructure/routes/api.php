@@ -2,12 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Src\product\infrastructure\controllers\ProductController;
-use Src\shared\infrastructure\middleware\ValidTokenMiddleware;
 
 Route::get('', [ProductController::class, 'index']);
 Route::get('/{slug}', [ProductController::class, 'show']);
 
-Route::middleware(ValidTokenMiddleware::class)->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     Route::post('', [ProductController::class, 'save']);
     Route::put('/{id}', [ProductController::class, 'update']);
     Route::delete('/{id}', [ProductController::class, 'delete']);

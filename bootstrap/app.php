@@ -4,7 +4,7 @@ use App\Http\Middleware\AddAcceptTypeJson;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Src\shared\infrastructure\exceptions\DataNotFoundException;
+use KeycloakGuard\Exceptions\TokenException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,10 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
-        $exceptions->report(function (DataNotFoundException $e) {
+        $exceptions->render(function (TokenException $e) {
 
             return response()->json([
-                'message' => $e->getMessage(),
-            ], 404);
+                'message' => 'Expired token',
+            ], 401);
         });
     })->create();
