@@ -2,21 +2,17 @@
 
 namespace Src\shared\domain\value_objects;
 
-use Src\role\domain\exception\InvalidPermissionName;
+use Src\shared\domain\exception\InvalidPermission;
 
 class Permission {
 
     public function isValid(): bool {
 
         $permissions = [
-            "create_role",
-            "update_role",
-            "delete_role",
-            "read_role",
-
-            "update_user",
-            "delete_user",
-            "read_user",
+            "update_provider",
+            "delete_provider",
+            "create_provider",
+            "read_provider",
 
             "create_category",
             "update_category",
@@ -41,7 +37,7 @@ class Permission {
     ) {
 
         if(!$this->isValid())
-            throw new InvalidPermissionName("Invalid permission name: {$this->name}");
+            throw new InvalidPermission("Invalid permission name: {$this->name}");
     }
 
     public function name(): string {

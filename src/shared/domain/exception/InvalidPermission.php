@@ -2,4 +2,4 @@
 
 namespace Src\shared\domain\exception;
 
-class InvalidPermission extends \Exception {}
+class InvalidPermission extends \InvalidArgumentException {}

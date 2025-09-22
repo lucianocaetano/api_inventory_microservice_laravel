@@ -2,52 +2,50 @@
 
 namespace Tests\helpers;
 
-use Illuminate\Support\Facades\Http;
+use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 
 class authentication {
 
     public static function getNormalToken () {
+        $provider = new Keycloak([
+            'authServerUrl' => env('KEYCLOAK_URL'),
+            'realm' => env('KEYCLOAK_REALM'),
+            'clientId' => env('KEYCLOAK_CLIENT_ID'),
+            'clientSecret' => env('KEYCLOAK_CLIENT_SECRET'),
+            'redirectUri' => '',
+        ]);
 
-        $res = Http::post(
-            'http://auth-service-laravel.test-1:80/api/v1/auth/register',
-            [
-                'name' => 'new_user',
-                'email' => 'new_user@example.com',
-                'password' => 'password',
-                'password_confirmation' => 'password'
-            ]
-        );
+        try {
+            $token = $provider->getAccessToken('password', [
+                'username' => 'normal@gmail.com',
+                'password' => 'admin',
+            ]);
 
-        if($res->status() !== 201 || $res->status() !== 200) {
-
-            $res = Http::post(
-                'http://auth-service-laravel.test-1:80/api/v1/auth/login',
-                [
-                    'email' => 'new_user@example.com',
-                    'password' => 'password',
-                ]
-            );
-
-            return json_decode($res->body())->access_token;
-        } else {
-            return json_decode($res->body())->access_token;
+            return $token->getToken();
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
     public static function getSuperToken(): string
     {
-        $res = Http::withHeaders([
-            'Accept' => 'application/json'
-        ])->post(
-            'http://auth-service-laravel.test-1:80/api/v1/auth/login',
-            [
-                "email" => "test@example.com",
-                "password" => "password",
-            ]
-        );
+        $provider = new Keycloak([
+            'authServerUrl' => env('KEYCLOAK_URL'),
+            'realm' => env('KEYCLOAK_REALM'),
+            'clientId' => env('KEYCLOAK_CLIENT_ID'),
+            'clientSecret' => env('KEYCLOAK_CLIENT_SECRET'),
+            'redirectUri' => '',
+        ]);
 
-        $token = json_decode($res->body())->access_token;
+        try {
+            $token = $provider->getAccessToken('password', [
+                'username' => 'test@gmail.com',
+                'password' => 'secret',
+            ]);
 
-        return $token;
+            return $token->getToken();
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

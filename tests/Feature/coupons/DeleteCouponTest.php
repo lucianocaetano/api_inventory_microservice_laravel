@@ -70,7 +70,7 @@ class DeleteCouponTest extends TestCase
             'Content-Type' => 'application/json'
         ]);
 
-        $response->assertStatus(301);
+        $response->assertStatus(401);
     }
 
     public function test_delete_a_coupon_but_the_coupon_does_not_exists()

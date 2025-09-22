@@ -2,7 +2,7 @@
 
 namespace Src\shared\infrastructure\impl\out;
 
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Src\shared\application\contracts\out\ExtractCurrentUser;
 use Src\shared\domain\value_objects\Permission;
 use Src\shared\domain\value_objects\User;
@@ -10,36 +10,29 @@ use Src\shared\domain\value_objects\User;
 class ExtractCurrentUserImpl implements ExtractCurrentUser
 {
 
-    public function currentUser(): User
+    public function currentUser(): ?User
     {
         try {
-            $tokenString = request()->bearerToken();
+            $tokenString = request()->user();
 
-            $user = Http::withHeaders([
-                'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $tokenString
-            ])->get('http://auth-service-laravel.test-1:80/api/v1/auth/me');
-
-            $user = json_decode($user->body());
-
-            if (!$user) {
+            if (!$tokenString) {
                 return null;
             }
 
             $user = new User(
-                $user->id,
-                $user->email,
+                $tokenString['id'],
+                $tokenString['email'],
                 array_map(
                     function ($permission) {
                         return new Permission($permission);
                     },
-                    $user->permissions
+                    $tokenString['permissions']
                 )
             );
 
             return $user;
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            Log::error($e->getMessage());
             return null;
         }
     }

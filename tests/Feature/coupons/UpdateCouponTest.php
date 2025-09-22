@@ -169,7 +169,7 @@ class UpdateCouponTest extends TestCase
             ]
         );
 
-        $response->assertStatus(301);
+        $response->assertStatus(401);
         $response->assertJson([
             "error" => "Invalid token",
         ]);

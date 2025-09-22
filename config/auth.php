@@ -41,9 +41,9 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'jwt',
+            'driver' => 'keycloak',
             'provider' => 'users',
-        ]
+        ],
     ],
 
     /*
@@ -68,7 +68,6 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

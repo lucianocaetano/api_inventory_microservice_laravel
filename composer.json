@@ -11,11 +11,14 @@
     "require": {
         "php": "^8.2",
         "ecotone/laravel": "^1.264",
+        "firebase/php-jwt": "*",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mongodb/mongodb": "^2.0",
+        "robsontenorio/laravel-keycloak-guard": "^1.6",
         "spatie/laravel-data": "^4.17",
+        "stevenmaguire/oauth2-keycloak": "^5.1",
         "tymon/jwt-auth": "^2.2"
     },
     "require-dev": {

@@ -74,8 +74,7 @@ class CreateCategoryTest extends TestCase
         $response->assertInvalid("name");
     }
 
-    public function test_to_create_category_without_token(): void {
-        $token = null;
+    public function test_to_create_category_but_i_do_not_have_token(): void {
 
         $response = $this->postJson(
             'api/v1/category',
@@ -83,12 +82,9 @@ class CreateCategoryTest extends TestCase
                 "name" => "test",
                 "parent" => null
             ],
-            [
-                'Authorization' => "Bearer $token"
-            ]
         );
 
-        $response->assertStatus(301);
+        $response->assertStatus(401);
 
         $response->assertJson([
             "error" => "Invalid token",

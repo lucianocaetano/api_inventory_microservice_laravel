@@ -84,17 +84,14 @@ class DeleteCategoryTest extends TestCase
         ]);
     }
 
-    public function test_to_delete_category_but_without_token(): void
+    public function test_to_delete_category_but_i_do_not_have_token(): void
     {
-
         $response = $this->deleteJson(
             'api/v1/category/' . $this->slug,
             [],
-            [
-            ]
         );
 
-        $response->assertStatus(301);
+        $response->assertStatus(401);
 
         $response->assertJson([
             "error" => 'Invalid token',

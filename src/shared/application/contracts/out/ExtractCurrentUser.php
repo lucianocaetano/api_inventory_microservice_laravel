@@ -6,5 +6,5 @@ use Src\shared\domain\value_objects\User;
 
 interface ExtractCurrentUser {
 
-    public function currentUser(): User;
+    public function currentUser(): ?User;
 }
