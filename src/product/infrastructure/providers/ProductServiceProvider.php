@@ -3,7 +3,11 @@
 namespace Src\product\infrastructure\providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use Src\category\application\contracts\in\CreateProductUseCasePort;
+use Src\category\application\contracts\in\DeleteProductUseCasePort;
+use Src\category\application\contracts\in\FindAllProductsUseCasePort;
+use Src\category\application\contracts\in\FindBySlugProductUseCasePort;
+use Src\category\application\contracts\in\UpdateProductUseCasePort;
 use Src\product\application\contracts\out\ProductReadRepository;
 use Src\product\application\use_cases\CreateProductUseCase;
 use Src\product\application\use_cases\DeleteProductUseCase;
@@ -30,11 +34,11 @@ class ProductServiceProvider extends ServiceProvider
             EloquentProductReadRepository::class
         );
 
-        $this->app->bind(CreateProductUseCase::class);
-        $this->app->bind(UpdateProductUseCase::class);
-        $this->app->bind(DeleteProductUseCase::class);
-        $this->app->bind(FindAllProductsUseCase::class);
-        $this->app->bind(FindBySlugProductUseCase::class);
+        $this->app->bind(CreateProductUseCasePort::class, CreateProductUseCase::class);
+        $this->app->bind(UpdateProductUseCasePort::class, UpdateProductUseCase::class);
+        $this->app->bind(DeleteProductUseCasePort::class, DeleteProductUseCase::class);
+        $this->app->bind(FindAllProductsUseCasePort::class, FindAllProductsUseCase::class);
+        $this->app->bind(FindBySlugProductUseCasePort::class, FindBySlugProductUseCase::class);
     }
 
     public function boot()

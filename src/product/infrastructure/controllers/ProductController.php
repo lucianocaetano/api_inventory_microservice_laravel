@@ -5,11 +5,11 @@ namespace Src\product\infrastructure\controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Src\product\application\use_cases\CreateProductUseCase;
-use Src\product\application\use_cases\DeleteProductUseCase;
-use Src\product\application\use_cases\FindAllProductsUseCase;
-use Src\product\application\use_cases\FindBySlugProductUseCase;
-use Src\product\application\use_cases\UpdateProductUseCase;
+use Src\category\application\contracts\in\CreateProductUseCasePort;
+use Src\category\application\contracts\in\DeleteProductUseCasePort;
+use Src\category\application\contracts\in\FindAllProductsUseCasePort;
+use Src\category\application\contracts\in\FindBySlugProductUseCasePort;
+use Src\category\application\contracts\in\UpdateProductUseCasePort;
 use Src\product\domain\entities\Product;
 use Src\shared\domain\exception\InvalidPermission;
 use Src\shared\domain\value_objects\Amount;
@@ -20,11 +20,11 @@ use Src\shared\infrastructure\exceptions\DataNotFoundException;
 class ProductController extends Controller {
 
     public function __construct(
-        private CreateProductUseCase $createProductUseCase,
-        private UpdateProductUseCase $updateProductUseCase,
-        private DeleteProductUseCase $deleteProductUseCase,
-        private FindAllProductsUseCase $findAllProductsUseCase,
-        private FindBySlugProductUseCase $findBySlugProductUseCase
+        private CreateProductUseCasePort $createProductUseCase,
+        private UpdateProductUseCasePort $updateProductUseCase,
+        private DeleteProductUseCasePort $deleteProductUseCase,
+        private FindAllProductsUseCasePort $findAllProductsUseCase,
+        private FindBySlugProductUseCasePort $findBySlugProductUseCase
     ) {}
 
     public function index(Request $request) {

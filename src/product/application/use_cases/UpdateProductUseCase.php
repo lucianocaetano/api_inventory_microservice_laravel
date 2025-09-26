@@ -2,6 +2,7 @@
 
 namespace Src\product\application\use_cases;
 
+use Src\category\application\contracts\in\UpdateProductUseCasePort;
 use Src\category\application\contracts\out\CategoryReadRepository;
 use Src\product\domain\entities\Product;
 use Src\product\domain\repositories\ProductRepository;
@@ -9,7 +10,7 @@ use Src\product\domain\service\ProductService;
 use Src\shared\application\contracts\out\ExtractCurrentUser;
 use Src\shared\domain\value_objects\Id;
 
-class UpdateProductUseCase {
+class UpdateProductUseCase implements UpdateProductUseCasePort {
 
     public function __construct(
         private CategoryReadRepository $categoryReadRepository,

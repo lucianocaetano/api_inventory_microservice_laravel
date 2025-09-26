@@ -15,5 +15,3 @@ class FindBySlugWithProductsUseCase implements FindBySlugWithProductsUseCasePort
         return $this->repository->findBySlugWithProducts($slug);
     }
 }
-
-

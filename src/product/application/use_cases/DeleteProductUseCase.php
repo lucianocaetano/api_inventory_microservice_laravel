@@ -2,19 +2,20 @@
 
 namespace Src\product\application\use_cases;
 
+use Src\category\application\contracts\in\DeleteProductUseCasePort;
 use Src\product\domain\repositories\ProductRepository;
 use Src\product\domain\service\ProductService;
 use Src\shared\application\contracts\out\ExtractCurrentUser;
 use Src\shared\domain\value_objects\Id;
 
-class DeleteProductUseCase {
+class DeleteProductUseCase implements DeleteProductUseCasePort {
 
     public function __construct(
         private ProductRepository $repository,
         private ExtractCurrentUser $extractCurrentUser
     ) {}
 
-    public function execute(Id $id) {
+    public function execute(Id $id): void {
 
         $user = $this->extractCurrentUser->currentUser();
 

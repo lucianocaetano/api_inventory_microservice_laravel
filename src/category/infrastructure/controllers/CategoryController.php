@@ -5,12 +5,12 @@ namespace Src\category\infrastructure\controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Src\category\application\use_cases\CreateCategoryUseCase;
-use Src\category\application\use_cases\DeleteCategoryUseCase;
-use Src\category\application\use_cases\FindAllCategoriesUseCase;
-use Src\category\application\use_cases\FindBySlugCategoryUseCase;
-use Src\category\application\use_cases\FindBySlugWithProductsUseCase;
-use Src\category\application\use_cases\UpdateCategoryUseCase;
+use Src\category\application\contracts\in\CreateCategoryUseCasePort;
+use Src\category\application\contracts\in\DeleteCategoryUseCasePort;
+use Src\category\application\contracts\in\FindAllCategoriesUseCasePort;
+use Src\category\application\contracts\in\FindBySlugCategoryUseCasePort;
+use Src\category\application\contracts\in\FindBySlugWithProductsUseCasePort;
+use Src\category\application\contracts\in\UpdateCategoryUseCasePort;
 use Src\category\domain\entities\Category;
 use Src\shared\domain\exception\InvalidPermission;
 use Src\shared\domain\value_objects\Id;
@@ -19,12 +19,12 @@ use Src\shared\infrastructure\exceptions\DataNotFoundException;
 class CategoryController extends Controller {
 
     public function __construct (
-        private FindAllCategoriesUseCase $findAllCategoriesUseCase,
-        private FindBySlugCategoryUseCase $findBySlugCategoryUseCase,
-        private FindBySlugWithProductsUseCase $findBySlugWithProductsUseCase,
-        private CreateCategoryUseCase $createCategoryUseCase,
-        private UpdateCategoryUseCase $updateCategoryUseCase,
-        private DeleteCategoryUseCase $deleteCategoryUseCase
+        private FindAllCategoriesUseCasePort $findAllCategoriesUseCase,
+        private FindBySlugCategoryUseCasePort $findBySlugCategoryUseCase,
+        private FindBySlugWithProductsUseCasePort $findBySlugWithProductsUseCase,
+        private CreateCategoryUseCasePort $createCategoryUseCase,
+        private UpdateCategoryUseCasePort $updateCategoryUseCase,
+        private DeleteCategoryUseCasePort $deleteCategoryUseCase
     ) {}
 
     public function index(Request $request) {

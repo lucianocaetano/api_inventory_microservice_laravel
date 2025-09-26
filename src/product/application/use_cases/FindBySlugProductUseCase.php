@@ -2,9 +2,10 @@
 
 namespace Src\product\application\use_cases;
 
+use Src\category\application\contracts\in\FindBySlugProductUseCasePort;
 use Src\product\application\contracts\out\ProductReadRepository;
 
-class FindBySlugProductUseCase
+class FindBySlugProductUseCase implements FindBySlugProductUseCasePort
 {
 
     public function __construct(
