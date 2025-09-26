@@ -18,7 +18,7 @@ class authentication {
         try {
             $token = $provider->getAccessToken('password', [
                 'username' => 'normal@gmail.com',
-                'password' => 'admin',
+                'password' => 'password',
             ]);
 
             return $token->getToken();
@@ -39,7 +39,7 @@ class authentication {
             ]);
 
             $token = $provider->getAccessToken('password', [
-                'username' => 'test@gmail.com',
+                'username' => 'admin@gmail.com',
                 'password' => 'admin',
             ]);
 

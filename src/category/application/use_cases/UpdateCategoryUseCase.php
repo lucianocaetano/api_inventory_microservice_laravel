@@ -2,6 +2,7 @@
 
 namespace Src\category\application\use_cases;
 
+use Src\category\application\contracts\in\UpdateCategoryUseCasePort;
 use Src\category\application\contracts\out\CategoryReadRepository;
 use Src\category\application\exceptions\ParentCategoryNotFoundException;
 use Src\category\domain\entities\Category;
@@ -10,7 +11,7 @@ use Src\category\domain\services\CategoryService;
 use Src\shared\application\contracts\out\ExtractCurrentUser;
 use Src\shared\infrastructure\exceptions\DataNotFoundException;
 
-class UpdateCategoryUseCase
+class UpdateCategoryUseCase implements UpdateCategoryUseCasePort
 {
     public function __construct(
         private CategoryReadRepository $readRepository,

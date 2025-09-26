@@ -33,7 +33,7 @@ class DDDStructure extends Command
 
         $base_path="src/";
 
-        $path_namespace = str_replace('/', '\\', trim($path, '/'));;
+        // $path_namespace = str_replace('/', '\\', trim($path, '/'));;
 
         $uri = base_path($base_path. $path);
         $this->info('Creating structure...');

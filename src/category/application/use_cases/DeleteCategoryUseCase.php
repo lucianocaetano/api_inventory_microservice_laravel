@@ -2,20 +2,20 @@
 
 namespace Src\category\application\use_cases;
 
+use Src\category\application\contracts\in\DeleteCategoryUseCasePort;
 use Src\category\domain\repositories\CategoryRepository;
 use Src\category\domain\services\CategoryService;
 use Src\shared\application\contracts\out\ExtractCurrentUser;
 
-class DeleteCategoryUseCase
+class DeleteCategoryUseCase implements DeleteCategoryUseCasePort
 {
     public function __construct(
         private ExtractCurrentUser $extractCurrentUser,
         private CategoryRepository $repositoryCategory
     ) {}
 
-    public function execute(string $category)
+    public function execute(string $category): void
     {
-
         $user = $this->extractCurrentUser->currentUser();
 
         $categoryService = new CategoryService(
