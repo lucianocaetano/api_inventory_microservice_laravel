@@ -2,9 +2,10 @@
 
 namespace Src\category\application\use_cases;
 
+use Src\category\application\contracts\in\FindBySlugCategoryUseCasePort;
 use Src\category\application\contracts\out\CategoryReadRepository;
 
-class FindBySlugCategoryUseCase {
+class FindBySlugCategoryUseCase implements FindBySlugCategoryUseCasePort {
 
     public function __construct(
         private CategoryReadRepository $repository

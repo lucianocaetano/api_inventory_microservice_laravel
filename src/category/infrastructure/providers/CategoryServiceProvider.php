@@ -22,6 +22,11 @@ use Src\category\application\use_cases\UpdateCategoryUseCase;
 use Src\category\application\use_cases\FindAllCategoriesUseCase;
 use Src\category\application\use_cases\FindBySlugCategoryUseCase;
 use Src\category\application\use_cases\FindBySlugWithProductsUseCase;
+use Src\category\infrastructure\decorators\CreateCategoryUseCaseEventPublisherDecorator;
+use Src\category\infrastructure\decorators\DeleteCategoryUseCaseEventPublisherDecorator;
+use Src\category\infrastructure\decorators\UpdateCategoryUseCaseEventPublisherDecorator;
+use Src\shared\application\contracts\out\EventPublisher;
+use Src\shared\application\contracts\out\ExtractCurrentUser;
 
 class CategoryServiceProvider extends ServiceProvider
 {
@@ -41,9 +46,46 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(FindBySlugCategoryUseCasePort::class, FindBySlugCategoryUseCase::class);
         $this->app->bind(FindBySlugWithProductsUseCasePort::class, FindBySlugWithProductsUseCase::class);
 
-        $this->app->bind(CreateCategoryUseCasePort::class, CreateCategoryUseCase::class);
-        $this->app->bind(UpdateCategoryUseCasePort::class, UpdateCategoryUseCase::class);
-        $this->app->bind(DeleteCategoryUseCasePort::class, DeleteCategoryUseCase::class);
+        $this->app->bind(CreateCategoryUseCasePort::class,
+            function () {
+
+                return new CreateCategoryUseCaseEventPublisherDecorator(
+                    new CreateCategoryUseCase(
+                        $this->app->make(CategoryReadRepository::class),
+                        $this->app->make(CategoryRepository::class),
+                        $this->app->make(ExtractCurrentUser::class)
+                    ),
+                    $this->app->make(EventPublisher::class),
+                );
+            }
+        );
+
+        $this->app->bind(UpdateCategoryUseCasePort::class,
+            function () {
+
+                return new UpdateCategoryUseCaseEventPublisherDecorator(
+                    new UpdateCategoryUseCase(
+                        $this->app->make(CategoryReadRepository::class),
+                        $this->app->make(ExtractCurrentUser::class),
+                        $this->app->make(CategoryRepository::class)
+                    ),
+                    $this->app->make(EventPublisher::class),
+                );
+            }
+        );
+
+        $this->app->bind(DeleteCategoryUseCasePort::class,
+            function () {
+
+                return new DeleteCategoryUseCaseEventPublisherDecorator(
+                    new DeleteCategoryUseCase(
+                        $this->app->make(ExtractCurrentUser::class),
+                        $this->app->make(CategoryRepository::class),
+                    ),
+                    $this->app->make(EventPublisher::class),
+                );
+            }
+        );
     }
 
     public function boot()

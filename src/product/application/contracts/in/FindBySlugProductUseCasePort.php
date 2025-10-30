@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\category\application\contracts\in;
+namespace Src\product\application\contracts\in;
 
 interface FindBySlugProductUseCasePort
 {

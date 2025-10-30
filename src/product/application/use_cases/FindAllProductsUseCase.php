@@ -2,7 +2,7 @@
 
 namespace Src\product\application\use_cases;
 
-use Src\category\application\contracts\in\FindAllProductsUseCasePort;
+use Src\product\application\contracts\in\FindAllProductsUseCasePort;
 use Src\product\application\contracts\out\ProductReadRepository;
 
 class FindAllProductsUseCase implements FindAllProductsUseCasePort {

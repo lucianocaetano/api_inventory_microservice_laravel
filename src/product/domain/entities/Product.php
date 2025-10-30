@@ -16,6 +16,7 @@ class Product {
      * @param Id $id
      * @param string $slug
      * @param string $name
+     * @param array<string> $images
      * @param string $description
      * @param int $quantity
      * @param Amount $price
@@ -25,6 +26,7 @@ class Product {
         private Id $id,
         private string $slug,
         private string $name,
+        private array $images,
         private string $description,
         private int $quantity,
         private Amount $price,
@@ -45,6 +47,14 @@ class Product {
     public function name(): string {
 
         return $this->name;
+    }
+
+
+    /**
+     * @return array<string>
+     */
+    public function images(): array {
+        return $this->images;
     }
 
     /**

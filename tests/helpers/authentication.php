@@ -21,6 +21,7 @@ class authentication {
                 'password' => 'password',
             ]);
 
+            dd($token->getToken());
             return $token->getToken();
         } catch (\Exception $e) {
             return null;

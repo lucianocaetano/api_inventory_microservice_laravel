@@ -27,7 +27,7 @@ RUN apt-get update && apt-get upgrade -y \
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
     && apt-get install -y php8.4-cli php8.4-dev \
-       librdkafka-dev php8.4-dev php-pear build-essential \
+       php8.4-dev php-pear build-essential \
        php8.4-pgsql php8.4-sqlite3 php8.4-gd \
        php8.4-curl php8.4-mongodb \
        php8.4-imap php8.4-mysql php8.4-mbstring \
@@ -55,6 +55,17 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzstd-dev \
+    librdkafka-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pecl install rdkafka \
+    && echo "extension=rdkafka.so" > /etc/php/8.4/cli/conf.d/20-rdkafka.ini \
+    && echo "extension=rdkafka.so" > /etc/php/8.4/mods-available/rdkafka.ini
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 

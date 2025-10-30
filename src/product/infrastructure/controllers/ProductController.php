@@ -5,11 +5,11 @@ namespace Src\product\infrastructure\controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Src\category\application\contracts\in\CreateProductUseCasePort;
-use Src\category\application\contracts\in\DeleteProductUseCasePort;
-use Src\category\application\contracts\in\FindAllProductsUseCasePort;
-use Src\category\application\contracts\in\FindBySlugProductUseCasePort;
-use Src\category\application\contracts\in\UpdateProductUseCasePort;
+use Src\product\application\contracts\in\CreateProductUseCasePort;
+use Src\product\application\contracts\in\DeleteProductUseCasePort;
+use Src\product\application\contracts\in\FindAllProductsUseCasePort;
+use Src\product\application\contracts\in\FindBySlugProductUseCasePort;
+use Src\product\application\contracts\in\UpdateProductUseCasePort;
 use Src\product\domain\entities\Product;
 use Src\shared\domain\exception\InvalidPermission;
 use Src\shared\domain\value_objects\Amount;
@@ -72,6 +72,7 @@ class ProductController extends Controller {
             Id::randomId(),
             str()->slug($request->input('name')),
             $request->input('name'),
+            [],
             $request->input('description'),
             $request->input('quantity'),
             new Amount(
@@ -113,6 +114,7 @@ class ProductController extends Controller {
             new Id($id),
             str()->slug($request->input('name')),
             $request->input('name'),
+            [],
             $request->input('description'),
             $request->input('quantity'),
             new Amount(

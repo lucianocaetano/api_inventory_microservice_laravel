@@ -2,8 +2,8 @@
 
 namespace Src\product\application\use_cases;
 
-use Src\category\application\contracts\in\CreateProductUseCasePort;
 use Src\category\application\contracts\out\CategoryReadRepository;
+use Src\product\application\contracts\in\CreateProductUseCasePort;
 use Src\product\domain\entities\Product;
 use Src\product\domain\repositories\ProductRepository;
 use Src\product\domain\service\ProductService;

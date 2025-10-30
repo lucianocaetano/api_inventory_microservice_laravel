@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class DDDStructure extends Command
 {
@@ -12,7 +13,7 @@ class DDDStructure extends Command
      *
      * @var string
      */
-    protected $signature = 'make:ddd {path : The path} {entity : The entity to create the DDD structure, books for example}';
+    protected $signature = 'make:ddd {path : The path (e.g. product)} {entity : The entity (e.g. Book)}';
 
     /**
      * The console command description.
@@ -23,94 +24,60 @@ class DDDStructure extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-        $path = $this->argument('path');
-        $entity = $this->argument('entity');
+        $path   = Str::lower($this->argument('path'));
+        $entity = Str::studly($this->argument('entity'));
 
-        $base_path="src/";
+        $basePath   = "src/{$path}";
+        $modulePath = base_path($basePath);
 
-        // $path_namespace = str_replace('/', '\\', trim($path, '/'));;
+        $this->info("📂 Creando estructura para {$entity} en {$modulePath}");
 
-        $uri = base_path($base_path. $path);
-        $this->info('Creating structure...');
+        $this->makeDir("$modulePath/domain/entities");
+        $this->makeDir("$modulePath/domain/value_objects");
+        $this->makeDir("$modulePath/domain/contracts");
 
-        File::makeDirectory($uri . '/domain', 0755, true, true);
-        $this->info($uri . '/domain');
+        $this->makeDir("$modulePath/application/contracts/in");
+        $this->makeDir("$modulePath/application/contracts/out");
 
-        File::makeDirectory($uri . '/domain/entities', 0755, true, true);
-        $this->info($uri . '/domain/entities');
+        $this->makeDir("$modulePath/application/DTOs");
+        $this->makeDir("$modulePath/application/use_cases");
 
-        File::makeDirectory($uri . '/domain/value_objects', 0755, true, true);
-        $this->info($uri . '/domain/value_objects');
+        $this->makeDir("$modulePath/infrastructure/controllers");
+        $this->makeDir("$modulePath/infrastructure/routes");
+        $this->makeDir("$modulePath/infrastructure/validators");
+        $this->makeDir("$modulePath/infrastructure/repositories");
+        $this->makeDir("$modulePath/infrastructure/providers");
 
-        File::makeDirectory($uri . '/domain/contracts', 0755, true, true);
-        $this->info($uri . '/domain/contracts');
-
-        File::makeDirectory($uri . '/application/contracts', 0755, true, true);
-        $this->info($uri . '/application/contracts');
-
-        File::makeDirectory($uri . '/application/contracts/out', 0755, true, true);
-        $this->info($uri . '/application/contracts/out');
-
-               File::makeDirectory($uri . '/domain/contracts/in', 0755, true, true);
-        $this->info($uri . '/application/contracts/in');
-
-        File::makeDirectory($uri . '/application', 0755, true, true);
-        $this->info($uri . '/application');
-
-        File::makeDirectory($uri . '/application/DTOs', 0755, true, true);
-        $this->info($uri . '/application/DTOs');
-
-        File::makeDirectory($uri . '/application/use_cases', 0755, true, true);
-        $this->info($uri . '/application/use_cases');
-
-        File::makeDirectory($uri . '/infrastructure', 0755, true, true);
-        $this->info($uri . '/infrastructure');
-
-        File::makeDirectory($uri . '/infrastructure/controllers', 0755, true, true);
-        $this->info($uri . '/infrastructure/controllers');
-
-        File::makeDirectory($uri . '/infrastructure/routes', 0755, true, true);
-        $this->info($uri . '/infrastructure/routes');
-
-        File::makeDirectory($uri . '/infrastructure/validators', 0755, true, true);
-        $this->info($uri . '/infrastructure/validators');
-
-        File::makeDirectory($uri . '/infrastructure/repositories', 0755, true, true);
-        $this->info($uri . '/infrastructure/repositories');
-
-        File::makeDirectory($uri . '/infrastructure/providers', 0755, true, true);
-        $this->info($uri . '/infrastructure/providers');
-
-        if($entity !== 'SharedModule') {
-            // api.php
-            $content = <<<PHP
+        if ($entity !== 'SharedModule') {
+            $routesContent = <<<PHP
             <?php
 
             use Illuminate\Support\Facades\Route;
 
             PHP;
 
-            File::put($uri . '/infrastructure/routes/api.php', $content);
-            $this->info('Routes entry point added in ' . $uri . '/infrastructure/routes/api.php' );
-            // local api.php added to main api.php
-            $content = <<<PHP
-            Route::prefix("$path")->group(base_path('{$base_path}/{$path}/infrastructure/routes/api.php'));
+            File::put("$modulePath/infrastructure/routes/api.php", $routesContent);
+            $this->info("✅ Routes entry point creado en {$basePath}/infrastructure/routes/api.php");
+
+            $routeInclude = <<<PHP
+            Route::prefix('$path')->group(base_path('{$basePath}/infrastructure/routes/api.php'));
             PHP;
 
-            File::append(base_path('routes/api.php'), $content);
-            $this->info('Module routes linked in main routes directory.');
+            $apiFile = base_path('routes/api.php');
+            if (!str_contains(File::get($apiFile), $routeInclude)) {
+                File::append($apiFile, PHP_EOL . $routeInclude . PHP_EOL);
+                $this->info("✅ Módulo $path vinculado en routes/api.php");
+            } else {
+                $this->warn("⚠️ Ya existía la referencia de rutas en routes/api.php");
+            }
 
-            // add entity
-
-            $content = <<<PHP
+            $entityContent = <<<PHP
             <?php
 
-            namespace {ucfist($base_path)}\$path_namespace\\domain\\entities;
+            namespace Src\\$path\\domain\\entities;
 
             class {$entity}
             {
@@ -118,77 +85,91 @@ class DDDStructure extends Command
             }
             PHP;
 
-            File::put($uri . "/domain/entities/{$entity}.php", $content);
-            $this->info('Entity added');
+            File::put("$modulePath/domain/entities/{$entity}.php", $entityContent);
+            $this->info("✅ Entity {$entity} creada");
 
-            // ValidatorRequest.php
-            $content = <<<PHP
+            $validatorContent = <<<PHP
             <?php
 
-            namespace {ucfist($base_path)}\$path_namespace\\infrastructure\\validators;
+            namespace Src\\$path\\infrastructure\\validators;
 
             use Illuminate\Foundation\Http\FormRequest;
 
-            class ExampleValidatorRequest extends FormRequest{
-
-                public function authorize() {
+            class ExampleValidatorRequest extends FormRequest
+            {
+                public function authorize(): bool
+                {
                     return true;
                 }
 
-                public function rules(){
+                public function rules(): array
+                {
                     return [
-                        "field" => 'nullable|max:255'
+                        'field' => 'nullable|max:255',
                     ];
                 }
             }
             PHP;
 
-            File::put($uri.'/infrastructure/validators/ExampleValidatorRequest.php', $content);
-            $this->info('Example validation request added');
+            File::put("$modulePath/infrastructure/validators/ExampleValidatorRequest.php", $validatorContent);
+            $this->info("✅ ExampleValidatorRequest creado");
 
-            // example controller
-
-            $content = <<<PHP
+            $controllerContent = <<<PHP
             <?php
 
-            namespace {ucfist($base_path)}\$path_namespace\\infrastructure\\controllers;
+            namespace Src\\$path\\infrastructure\\controllers;
 
             use App\Http\Controllers\Controller;
 
-            class {$entity}Controller extends Controller {
+            class {$entity}Controller extends Controller
+            {
                 //
             }
             PHP;
 
-            File::put($uri.'/infrastructure/controllers/'.$entity.'Controller.php', $content);
-            $this->info('Example controller added');
+            File::put("$modulePath/infrastructure/controllers/{$entity}Controller.php", $controllerContent);
+            $this->info("✅ {$entity}Controller creado");
 
-            $content = <<<PHP
+            $providerContent = <<<PHP
             <?php
 
-            namespace Src\\product\\infrastructure\\providers;
+            namespace Src\\$path\\infrastructure\\providers;
 
             use Illuminate\\Support\\ServiceProvider;
 
             class {$entity}ServiceProvider extends ServiceProvider
             {
-                public function register()
+                public function register(): void
                 {
                     //
                 }
 
-                public function boot()
+                public function boot(): void
                 {
                     //
                 }
             }
             PHP;
 
-            File::put($uri.'/infrastructure/providers/'.$entity.'ServiceProvider.php', $content);
-            $this->info('Example provider added');
-
-            $this->info('Structure ' . $entity . ' DDD successfully created.');
+            File::put("$modulePath/infrastructure/providers/{$entity}ServiceProvider.php", $providerContent);
+            $this->info("✅ {$entity}ServiceProvider creado");
         }
+
+        $this->info("🎉 Estructura DDD de {$entity} generada con éxito.");
         return Command::SUCCESS;
     }
+
+    /**
+     * Helper para crear directorios
+     */
+    private function makeDir(string $path): void
+    {
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0755, true);
+            $this->info("📁 Directorio creado: $path");
+        } else {
+            $this->warn("⚠️ Directorio ya existe: $path");
+        }
+    }
 }
+
